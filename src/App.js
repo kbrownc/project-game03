@@ -6,7 +6,7 @@ import {newBoard} from './newboard.js';
 class App extends React.Component {
   state = {
     roll: 0,
-    message: "Roll again",
+    message: "Roll again", 
     optMessage: "Kim",
     score: 0,
     position: -1,
@@ -43,13 +43,12 @@ class App extends React.Component {
       };
     // Add the detour squares and remove a single square after detour
      if (workBoard[newPosition].itemsToAdd !== undefined){ 
-        let workBoard2 = workBoard.slice(0, newPosition + 1).
-                    concat(workBoard[newPosition].itemsToAdd.slice(0), 
+        let workBoard2 = workBoard.slice(0, newPosition + 1).concat(workBoard[newPosition].itemsToAdd.slice(0), 
                      workBoard.slice(newPosition + 1 + workBoard[newPosition].itemsToDelete));
         workBoard = workBoard2.slice();
-         optMessage = "You have a longer journey";
+        optMessage = "You have a longer journey";
      }
-    // Check for end of Game
+    // Check for end of Game 
     if ((newPosition) >= (workBoard.length - 1)) {
       message = "Game Complete";
       optMessage = "Kim";
