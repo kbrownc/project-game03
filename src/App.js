@@ -43,7 +43,7 @@ class App extends React.Component {
       };
     // Add the detour squares and remove a single square after detour
      if (workBoard[newPosition].itemsToAdd !== undefined){ 
-        let workBoard2 = workBoard.slice(0, newPosition + 1).concat(workBoard[newPosition].itemsToAdd.slice(0), 
+        let workBoard2 = workBoard.slice(0, newPosition + 1).concat(workBoard[newPosition].itemsToAdd, 
                      workBoard.slice(newPosition + 1 + workBoard[newPosition].itemsToDelete));
         workBoard = workBoard2.slice();
         optMessage = "You have a longer journey";
@@ -51,7 +51,7 @@ class App extends React.Component {
     // Check for end of Game 
     if ((newPosition) >= (workBoard.length - 1)) {
       message = "Game Complete";
-      optMessage = "Kim";
+      optMessage = "Kim"
     }
     else {
         message = "Role Again";
@@ -67,6 +67,7 @@ class App extends React.Component {
   }
 // render
  render() { 
+    let isGameComplete = this.state.position <= this.state.board.length - 2 ;
     return (
       <div className="App">
         <div className="Nav">      
@@ -79,12 +80,12 @@ class App extends React.Component {
               <h5>{this.state.optMessage}</h5>
         </div>
         <div className="Board">
-              {this.state.position <= this.state.board.length - 2 ? (
+              {isGameComplete ? (
                 <div className={'Button Box'} style={{gridColumn: 4, gridRow: 1}} 
                 onClick={this.onRoll}>Roll</div>
                 ) : null}
 
-              {this.state.position <= this.state.board.length - 2 ? (
+              {isGameComplete ? (
                 <div className={'Button Box'} style={{gridColumn: 4, gridRow: 2}}>
                 {this.state.roll}</div>) : null}
           {
