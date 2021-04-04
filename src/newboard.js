@@ -1,4 +1,3 @@
-import React from 'react';
 
 let newBoard = 
             [{boxContent: "Start", boxCol: 7, boxRow: 1},

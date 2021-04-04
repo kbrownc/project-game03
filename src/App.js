@@ -1,5 +1,4 @@
 import React from 'react';
-//import React, { Component } from 'react';
 import './App.css';
 import {newBoard} from './newboard.js';
 
@@ -25,45 +24,45 @@ class App extends React.Component {
   }
 // roll dice (roll button)
   onRoll = () => {
-    const randomNumber = Math.floor(Math.random() * 6) + 1;
-    let workBoard = this.state.board.slice();
-    let scoreAdj = 1;
-    let newPosition = Math.min(this.state.position + randomNumber, workBoard.length - 1)
-    let message = "Roll again";
-    let optMessage = "Kim";
-    // Need to adjust score if 'miss a turn' or 'gain a turn' was landed on
-    if (workBoard[newPosition].extraScore !== undefined){
-        scoreAdj = scoreAdj + workBoard[newPosition].extraScore;
-        if (workBoard[newPosition].extraScore < 0){
-            optMessage = "Wonderful....you get an extra roll";
-          }
-          else {
-            optMessage = "Sorry....you lose a roll";
-          }
-      };
-    // Add the detour squares and remove a single square after detour
-     if (workBoard[newPosition].itemsToAdd !== undefined){ 
-        let workBoard2 = workBoard.slice(0, newPosition + 1).concat(workBoard[newPosition].itemsToAdd, 
+    this.setState((oldState) => {
+      let workBoard = oldState.board.slice(); 
+      const randomNumber = Math.floor(Math.random() * 6) + 1;
+      let scoreAdj = 1;
+      let newPosition = Math.min(this.state.position + randomNumber, workBoard.length - 1)
+      let message = "Roll again";
+      let optMessage = "Kim";
+      // Need to adjust score if 'miss a turn' or 'gain a turn' was landed on
+      if (workBoard[newPosition].extraScore !== undefined){
+          scoreAdj = scoreAdj + workBoard[newPosition].extraScore;
+          if (workBoard[newPosition].extraScore < 0){
+              optMessage = "Wonderful....you get an extra roll";
+            }
+            else {
+              optMessage = "Sorry....you lose a roll";
+            }
+        };
+      // Add the detour squares and remove a single square after detour
+      if (workBoard[newPosition].itemsToAdd !== undefined){ 
+          let workBoard2 = workBoard.slice(0, newPosition + 1).concat(workBoard[newPosition].itemsToAdd, 
                      workBoard.slice(newPosition + 1 + workBoard[newPosition].itemsToDelete));
-        workBoard = workBoard2.slice();
-        optMessage = "You have a longer journey";
-     }
-    // Check for end of Game 
-    if ((newPosition) >= (workBoard.length - 1)) {
-      message = "Game Complete";
-      optMessage = "Kim"
-    }
-    else {
-        message = "Role Again";
-    }
-    this.setState((oldState) => ({
-      roll: randomNumber,
-      message: message,
-      optMessage: optMessage,
-      score: oldState.score + scoreAdj,
-      position: newPosition,
-      board: workBoard
-    }));
+          workBoard = workBoard2.slice();
+          optMessage = "You have a longer journey";
+      }
+      // Check for end of Game 
+      if ((newPosition) >= (workBoard.length - 1)) {
+        message = "Game Complete";
+        optMessage = "Kim"
+      }
+      else {
+          message = "Role Again";
+      }
+        return {  board: workBoard, 
+                  roll: randomNumber,
+                  message: message,
+                  optMessage: optMessage,
+                  score: oldState.score + scoreAdj,
+                  position: newPosition };
+      });
   }
 // render
  render() { 
