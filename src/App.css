@@ -1,14 +1,59 @@
 .App {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin: 10px;
   text-align: center;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.Board {
+  display: grid;
+  grid-template-columns: repeat(7, 35px);
+  grid-template-rows: repeat(16, 20px);
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.Button:hover {
+  background-color: blue;
+} 
+
+.Nav {
+  display: grid;
+  grid-template-columns: repeat(7, 35px);
+  grid-template-rows: repeat(1, 20px);
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1px;
+}
+
+.Box {
+  background-color: yellow;
+  visibility: visible;
+  border: 1px solid black;
+  width: 35px;
+  height: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.BoxGone {
+  visibility: hidden;
+}
+
+.markSpot {
+  background-color: red;
+}
+
+.Messages {
+  text-align: center;
+  justify-content: center;
+  height: 60px;
+  width: 250px;
+  margin: auto;
+}
+
+h4, h5 {
+  margin: 6px;
 }
