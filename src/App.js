@@ -11,7 +11,7 @@ function App() {
   const [board, setBoard] = useState(newBoard.slice());
   
   // reset game (Play button)
-  onReset = () => {
+  const onReset = () => {
     setRoll(null);
     setMessage("Roll again");
     setOptMessage("Kim");
@@ -20,7 +20,7 @@ function App() {
     setBoard(newBoard.slice());
   };
   // roll dice (roll button)
-  onRoll = () => {
+  const onRoll = () => {
       let workBoard = board.slice();
       const randomNumber = Math.floor(Math.random() * 6) + 1;
       let scoreAdj = 1;
@@ -68,7 +68,7 @@ function App() {
     return (
       <div className="App">
         <div className="Nav">
-          <div className="Box Button" style={{ gridColumn: 1, gridRow: 1 }} onClick={this.onReset}>
+          <div className="Box Button" style={{ gridColumn: 1, gridRow: 1 }} onClick={onReset}>
             Play
           </div>
           <div className="Box" style={{ gridColumn: 6, gridRow: 1 }}>
@@ -84,7 +84,7 @@ function App() {
         </div>
         <div className="Board">
           {isGameComplete ? (
-            <div className={'Button Box'} style={{ gridColumn: 4, gridRow: 1 }} onClick={this.onRoll}>
+            <div className={'Button Box'} style={{ gridColumn: 4, gridRow: 1 }} onClick={onRoll}>
               Roll
             </div>
           ) : null}
