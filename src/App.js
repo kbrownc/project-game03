@@ -3,74 +3,75 @@ import './App.css';
 import { newBoard } from './newboard.js';
 
 function App() {
-  //  const [roll, setRoll] = useState(0);
-  const [{ roll, position }, setGameState] = useState({ roll: 0, position: -1 });
-  const [message, setMessage] = useState('Roll again');
-  const [optMessage, setOptMessage] = useState('Kim');
-  const [score, setScore] = useState(0);
-  //  const [position, setPosition] = useState(-1);
-  const [board, setBoard] = useState(newBoard.slice());
-
+  const [{ roll, position, message, optMessage, score, board }, setGameState] = useState({
+    roll: 0,
+    position: -1,
+    message: 'Roll again',
+    optMessage: 'Kim',
+    score: 0,
+    board: newBoard.slice(),
+  });
   // reset game (Play button)
   const onReset = useCallback(() => {
-    //   setRoll(null);
     setGameState(prevGameState => {
-      return { roll: null, position: -1 };
+      return {
+        roll: null,
+        position: -1,
+        message: 'Roll again',
+        optMessage: 'Kim',
+        score: 0,
+        board: newBoard.slice(),
+      };
     });
-    setMessage('Roll again');
-    setOptMessage('Kim');
-    setScore(0);
-    //   setPosition(-1);
-    setBoard(newBoard.slice());
   }, []);
+
   // roll dice (roll button)
   const onRoll = useCallback(() => {
-    let workBoard = board.slice();
     setGameState(prevGameState => {
+      let workBoard = board.slice();
       const randomNumber = Math.floor(Math.random() * 6) + 1;
       const newPosition = Math.min(prevGameState.position + randomNumber, workBoard.length - 1);
+      let scoreAdj = 1;
+      let workMessage = 'Roll again';
+      let workOptMessage = 'Kim';
+      // Need to adjust score if 'miss a turn' or 'gain a turn' was landed on
+      if (workBoard[newPosition].extraScore !== undefined) {
+        scoreAdj = scoreAdj + workBoard[newPosition].extraScore;
+        if (workBoard[newPosition].extraScore < 0) {
+          workOptMessage = 'Wonderful....you get an extra roll';
+        } else {
+          workOptMessage = 'Sorry....you lose a roll';
+        }
+      }
+      // Add the detour squares and remove a single square after detour
+      if (workBoard[newPosition].itemsToAdd !== undefined) {
+        let workBoard2 = workBoard
+          .slice(0, newPosition + 1)
+          .concat(
+            workBoard[newPosition].itemsToAdd,
+            workBoard.slice(newPosition + 1 + workBoard[newPosition].itemsToDelete)
+          );
+        workBoard = workBoard2.slice();
+        workOptMessage = 'You have a longer journey';
+      }
+      // Check for end of Game
+      if (newPosition >= workBoard.length - 1) {
+        workMessage = 'Game Complete';
+        workOptMessage = 'Kim';
+      } else {
+        workMessage = 'Role Again';
+      }
       return {
         roll: randomNumber,
         position: newPosition,
+        message: workMessage,
+        optMessage: workOptMessage,
+        score: prevGameState.score + scoreAdj,
+        board: workBoard,
       };
     });
-    let scoreAdj = 1;
-    let workMessage = 'Roll again';
-    let workOptMessage = 'Kim';
-    // Need to adjust score if 'miss a turn' or 'gain a turn' was landed on
-    if (workBoard[newPosition].extraScore !== undefined) {
-      scoreAdj = scoreAdj + workBoard[newPosition].extraScore;
-      if (workBoard[newPosition].extraScore < 0) {
-        workOptMessage = 'Wonderful....you get an extra roll';
-      } else {
-        workOptMessage = 'Sorry....you lose a roll';
-      }
-    }
-    // Add the detour squares and remove a single square after detour
-    if (workBoard[newPosition].itemsToAdd !== undefined) {
-      let workBoard2 = workBoard
-        .slice(0, newPosition + 1)
-        .concat(
-          workBoard[newPosition].itemsToAdd,
-          workBoard.slice(newPosition + 1 + workBoard[newPosition].itemsToDelete)
-        );
-      workBoard = workBoard2.slice();
-      workOptMessage = 'You have a longer journey';
-    }
-    // Check for end of Game
-    if (newPosition >= workBoard.length - 1) {
-      workMessage = 'Game Complete';
-      workOptMessage = 'Kim';
-    } else {
-      workMessage = 'Role Again';
-    }
-    //      setRoll(randomNumber)
-    setMessage(workMessage);
-    setOptMessage(workOptMessage);
-    setScore(prevScore => prevScore + scoreAdj);
-    //      setPosition(newPosition)
-    setBoard(workBoard);
-  }, [board, position]);
+  }, [board]);
+
   let isGameComplete = position <= board.length - 2;
   // render
   return (
