@@ -28,7 +28,7 @@ function App() {
   // roll dice (roll button)
   const onRoll = useCallback(() => {
     setGameState(prevGameState => {
-      let workBoard = board.slice();
+      let workBoard = prevGameState.board.slice();
       const randomNumber = Math.floor(Math.random() * 6) + 1;
       const newPosition = Math.min(prevGameState.position + randomNumber, workBoard.length - 1);
       let scoreAdj = 1;
@@ -70,7 +70,7 @@ function App() {
         board: workBoard,
       };
     });
-  }, [board]);
+  }, []);
 
   let isGameComplete = position <= board.length - 2;
   // render
