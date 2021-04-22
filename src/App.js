@@ -1,43 +1,46 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import './App.css';
 import { newBoard } from './newboard.js';
 
-class App extends React.Component {
-  state = {
+function App() {
+  const [{ roll, position, message, optMessage, score, board }, setGameState] = useState({
     roll: 0,
+    position: -1,
     message: 'Roll again',
     optMessage: 'Kim',
     score: 0,
-    position: -1,
     board: newBoard.slice(),
-  };
+  });
   // reset game (Play button)
-  onReset = () => {
-    this.setState({
-      roll: null,
-      message: 'Roll again',
-      optMessage: 'Kim',
-      score: 0,
-      position: -1,
-      board: newBoard.slice(),
+  const onReset = useCallback(() => {
+    setGameState( () => {
+      return {
+        roll: null,
+        position: -1,
+        message: 'Roll again',
+        optMessage: 'Kim',
+        score: 0,
+        board: newBoard.slice(),
+      };
     });
-  };
+  }, []);
+
   // roll dice (roll button)
-  onRoll = () => {
-    this.setState(oldState => {
-      let workBoard = oldState.board.slice();
+  const onRoll = useCallback(() => {
+    setGameState(prevGameState => {
+      let workBoard = prevGameState.board.slice();
       const randomNumber = Math.floor(Math.random() * 6) + 1;
+      const newPosition = Math.min(prevGameState.position + randomNumber, workBoard.length - 1);
       let scoreAdj = 1;
-      let newPosition = Math.min(oldState.position + randomNumber, workBoard.length - 1);
-      let message = 'Roll again';
-      let optMessage = 'Kim';
+      let workMessage = 'Roll again';
+      let workOptMessage = 'Kim';
       // Need to adjust score if 'miss a turn' or 'gain a turn' was landed on
       if (workBoard[newPosition].extraScore !== undefined) {
         scoreAdj = scoreAdj + workBoard[newPosition].extraScore;
         if (workBoard[newPosition].extraScore < 0) {
-          optMessage = 'Wonderful....you get an extra roll';
+          workOptMessage = 'Wonderful....you get an extra roll';
         } else {
-          optMessage = 'Sorry....you lose a roll';
+          workOptMessage = 'Sorry....you lose a roll';
         }
       }
       // Add the detour squares and remove a single square after detour
@@ -49,70 +52,69 @@ class App extends React.Component {
             workBoard.slice(newPosition + 1 + workBoard[newPosition].itemsToDelete)
           );
         workBoard = workBoard2.slice();
-        optMessage = 'You have a longer journey';
+        workOptMessage = 'You have a longer journey';
       }
       // Check for end of Game
       if (newPosition >= workBoard.length - 1) {
-        message = 'Game Complete';
-        optMessage = 'Kim';
+        workMessage = 'Game Complete';
+        workOptMessage = 'Kim';
       } else {
-        message = 'Role Again';
+        workMessage = 'Role Again';
       }
       return {
-        board: workBoard,
         roll: randomNumber,
-        message: message,
-        optMessage: optMessage,
-        score: oldState.score + scoreAdj,
         position: newPosition,
+        message: workMessage,
+        optMessage: workOptMessage,
+        score: prevGameState.score + scoreAdj,
+        board: workBoard,
       };
     });
-  };
-  // render
-  render() {
-    let isGameComplete = this.state.position <= this.state.board.length - 2;
-    return (
-      <div className="App">
-        <div className="Nav">
-          <div className="Box Button" style={{ gridColumn: 1, gridRow: 1 }} onClick={this.onReset}>
-            Play
-          </div>
-          <div className="Box" style={{ gridColumn: 6, gridRow: 1 }}>
-            Score
-          </div>
-          <div className="Box" style={{ gridColumn: 7, gridRow: 1 }}>
-            {this.state.score}
-          </div>
-        </div>
-        <div className="Messages">
-          <h4>{this.state.message}</h4>
-          <h5>{this.state.optMessage}</h5>
-        </div>
-        <div className="Board">
-          {isGameComplete ? (
-            <div className={'Button Box'} style={{ gridColumn: 4, gridRow: 1 }} onClick={this.onRoll}>
-              Roll
-            </div>
-          ) : null}
+  }, []);
 
-          {isGameComplete ? (
-            <div className={'Button Box'} style={{ gridColumn: 4, gridRow: 2 }}>
-              {this.state.roll}
-            </div>
-          ) : null}
-          {this.state.board.map((item, index) => (
-            <div
-              key={index}
-              className={`Box${this.state.position === index ? ' markSpot' : ''}`}
-              style={{ gridColumn: `${item.boxCol}`, gridRow: `${item.boxRow}` }}
-            >
-              {item.boxContent}
-            </div>
-          ))}
+  let isGameComplete = position <= board.length - 2;
+  // render
+  return (
+    <div className="App">
+      <div className="Nav">
+        <div className="Box Button" style={{ gridColumn: 1, gridRow: 1 }} onClick={onReset}>
+          Play
+        </div>
+        <div className="Box" style={{ gridColumn: 6, gridRow: 1 }}>
+          Score
+        </div>
+        <div className="Box" style={{ gridColumn: 7, gridRow: 1 }}>
+          {score}
         </div>
       </div>
-    );
-  }
+      <div className="Messages">
+        <h4>{message}</h4>
+        <h5>{optMessage}</h5>
+      </div>
+      <div className="Board">
+        {isGameComplete ? (
+          <div className={'Button Box'} style={{ gridColumn: 4, gridRow: 1 }} onClick={onRoll}>
+            Roll
+          </div>
+        ) : null}
+
+        {isGameComplete ? (
+          <div className={'Button Box'} style={{ gridColumn: 4, gridRow: 2 }}>
+            {roll}
+          </div>
+        ) : null}
+        {board.map((item, index) => (
+          <div
+            key={index}
+            className={`Box${position === index ? ' markSpot' : ''}`}
+            style={{ gridColumn: `${item.boxCol}`, gridRow: `${item.boxRow}` }}
+          >
+            {item.boxContent}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default App;
