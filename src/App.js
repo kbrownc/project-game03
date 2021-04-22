@@ -13,7 +13,7 @@ function App() {
   });
   // reset game (Play button)
   const onReset = useCallback(() => {
-    setGameState(prevGameState => {
+    setGameState( () => {
       return {
         roll: null,
         position: -1,
